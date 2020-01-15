@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>YouTube API</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <div id="rez-old"></div>
+
+  <div id="video-container">
+    <iframe 
+      id="iframe-video"
+      class="video-frame" 
+      width="100%" height="100%" 
+      src="https://www.youtube.com/embed/5IpAd_XwroU?enablejsapi=1&version=3&playerapiid=ytplayer" 
+      frameborder="0" 
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+      allowfullscreen></iframe>
+  </div>
+
+  <div id="rez"></div>
+
+  <script type="text/javascript">
+
+    var tag = document.createElement('script');
+    tag.id = 'iframe-demo';
+    tag.src = 'https://www.youtube.com/iframe_api';
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    
+    var player;
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('iframe-video', {
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+      });
+    }
+
+    function onPlayerReady(e) {
+      document.getElementById("rez").innerHTML = "<p class='ready'>video loaded.</p>";
+    }
+
+    function onPlayerStateChange(e) {
+      document.getElementById("rez").innerHTML += "<p class='change'>"+ e.data +"</p>";
+      document.getElementById("rez").innerHTML += "<p class='change'>"+ player.getCurrentTime() +"</p>";
+    }
+
+    window.onbeforeunload = function () {
+      localStorage.setItem('yt-ended', player.getCurrentTime());
+    };
+
+    if(localStorage.getItem("yt-ended")) {
+      document.getElementById("rez-old").innerHTML = "The video stopped at: " + localStorage.getItem("yt-ended") + " seconds</p>";
+    }
+  </script>
+
+</body>
+</html>
