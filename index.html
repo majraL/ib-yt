@@ -27,6 +27,12 @@
 
   <script type="text/javascript">
 
+    var sendUrl = "https://jsonplaceholder.typicode.com/posts/";
+    var data = {
+      ime: "mario",
+      prezime: "trupkovic"
+    }
+
     var tag = document.createElement('script');
     tag.id = 'iframe-demo';
     tag.src = 'https://www.youtube.com/iframe_api';
@@ -48,17 +54,29 @@
     }
 
     function onPlayerStateChange(e) {
-      document.getElementById("rez").innerHTML += "<p class='change'>"+ e.data +"</p>";
-      document.getElementById("rez").innerHTML += "<p class='change'>"+ player.getCurrentTime() +"</p>";
+      // document.getElementById("rez").innerHTML += "<p class='change'>"+ e.data +"</p>";
+      document.getElementById("rez").innerHTML += "<p class='change'>"+ player.getCurrentTime() +", postotak: "+ Math.round(player.getCurrentTime() / player.getDuration() * 100) +"%</p>";
     }
 
     window.onbeforeunload = function () {
       localStorage.setItem('yt-ended', player.getCurrentTime());
     };
 
-    if(localStorage.getItem("yt-ended")) {
-      document.getElementById("rez-old").innerHTML = "The video stopped at: " + localStorage.getItem("yt-ended") + " seconds</p>";
-    }
+
+    // if (localStorage.getItem("yt-ended")) {
+    //   document.getElementById("rez-old").innerHTML = "The video stopped at: " + localStorage.getItem("yt-ended") + " seconds</p>";
+      
+    //   var data = {
+    //     name: "mario",
+    //     time: player.getCurrentTime()
+    //   }
+    //   var dataJson = JSON.stringify(data);
+    //   var xhr = new XMLHttpRequest();
+
+    //   xhr.open("POST", "receive.php");
+    //   xhr.setRequestHeader("Content-Type", aplication/json);
+    //   xhr.send(dataJson);
+    // }
   </script>
 
 </body>
