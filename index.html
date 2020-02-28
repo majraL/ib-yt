@@ -9,17 +9,17 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  
+
   <div id="rez-old"></div>
 
   <div id="video-container">
-    <iframe 
+    <iframe
       id="iframe-video"
-      class="video-frame" 
-      width="100%" height="100%" 
-      src="https://www.youtube.com/embed/5IpAd_XwroU?enablejsapi=1&version=3&playerapiid=ytplayer" 
-      frameborder="0" 
-      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+      class="video-frame"
+      width="100%" height="100%"
+      src="https://www.youtube.com/embed/5IpAd_XwroU?enablejsapi=1&version=3&playerapiid=ytplayer"
+      frameborder="0"
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
       allowfullscreen></iframe>
   </div>
 
@@ -27,18 +27,12 @@
 
   <script type="text/javascript">
 
-    // var sendUrl = "https://jsonplaceholder.typicode.com/posts/";
-    // var data = {
-    //   ime: "mario",
-    //   prezime: "trupkovic"
-    // }
-
     var tag = document.createElement('script');
     tag.id = 'iframe-demo';
     tag.src = 'https://www.youtube.com/iframe_api';
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    
+
     var player;
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('iframe-video', {
@@ -49,34 +43,36 @@
       });
     }
 
+    function getWord(timePlayed) {
+      if (timePlayed >= 0 && timePlayed <= 33) {
+        return "SHORT";
+      }
+
+      if (timePlayed >= 34 && timePlayed <= 66) {
+        return "MED";
+      }
+
+      if (timePlayed >= 67 && timePlayed <= 100) {
+        return "LONG";
+      }
+    }
+
     function onPlayerReady(e) {
       document.getElementById("rez").innerHTML = "<p class='ready'>video loaded.</p>";
     }
 
     function onPlayerStateChange(e) {
-      // document.getElementById("rez").innerHTML += "<p class='change'>"+ e.data +"</p>";
-      document.getElementById("rez").innerHTML += "<p class='change'>"+ player.getCurrentTime() +", postotak: "+ Math.round(player.getCurrentTime() / player.getDuration() * 100) +"%</p>";
+      document.getElementById("rez").innerHTML +=
+        "<p class='change'>"+
+          "<span class='currentTime'>current time: <strong>"+player.getCurrentTime()+"</strong></span>"+
+          "<span class='percentage'>percentage: <strong>"+ Math.round(player.getCurrentTime() / player.getDuration() * 100) +"%</strong></span>"+
+          "<span class='word'>word: <strong>"+ getWord(Math.round(player.getCurrentTime() / player.getDuration() * 100)) +"</strong></span>"+
+        "</p>";
     }
 
     window.onbeforeunload = function () {
       localStorage.setItem('yt-ended', player.getCurrentTime());
     };
-
-
-    // if (localStorage.getItem("yt-ended")) {
-    //   document.getElementById("rez-old").innerHTML = "The video stopped at: " + localStorage.getItem("yt-ended") + " seconds</p>";
-      
-    //   var data = {
-    //     name: "mario",
-    //     time: player.getCurrentTime()
-    //   }
-    //   var dataJson = JSON.stringify(data);
-    //   var xhr = new XMLHttpRequest();
-
-    //   xhr.open("POST", "receive.php");
-    //   xhr.setRequestHeader("Content-Type", aplication/json);
-    //   xhr.send(dataJson);
-    // }
   </script>
 
 </body>

@@ -30,3 +30,15 @@ p {
 .changed {
   color: yellow;
 }
+
+.change {
+  margin-bottom: 20px;
+}
+
+.change span {
+  display: block;
+}
+
+.change span strong {
+  color: darkgreen;
+}
