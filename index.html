@@ -23,7 +23,8 @@
       allowfullscreen></iframe>
   </div>
 
-  <div id="rez"></div>
+  <div id="percentage"></div>
+  <div id="percentage-final"></div>
 
   <script type="text/javascript">
 
@@ -32,8 +33,16 @@
     tag.src = 'https://www.youtube.com/iframe_api';
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
+    var percentage = document.getElementById("percentage");
+    var percentageFinal = document.getElementById("percentage-final");
+    var percentageWatched = 0;
+    var timer;
+    var timeSpent = [];
+    var timeWatched;
+    var skipped = false;
+    var i = 0;
     var player;
+
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('iframe-video', {
           events: {
@@ -42,6 +51,56 @@
           }
       });
     }
+
+    function onPlayerStateChange(e) {
+
+      if (e.data === 1) {
+        if(!timeSpent.length){
+          for (var i=0, l=parseInt(player.getDuration()); i<l; i++) timeSpent.push(false);
+        }
+        timer = setInterval(record, 500);
+      } else if (e.data === 2) {
+        clearInterval(timer);
+      } else if (e.data === 3) {
+        getWatchedTime();
+      }
+    }
+
+    function record() {
+      timeSpent[ parseInt(player.getCurrentTime()) ] = true;
+      showPercentage();
+    }
+
+    function calculatePercentage() {
+      var percent = 0;
+      for (var i=0, l=timeSpent.length; i<l; i++) {
+        if(timeSpent[i]) percent++;
+      }
+      percent = Math.round(percent / timeSpent.length * 100);
+      return percent;
+    }
+
+    function showPercentage() {
+      var result = calculatePercentage();
+      percentage.innerHTML = "<p class='change'><span class='currentTime'>The user watched: <strong>"+ result + "%</strong></span></p>";
+    }
+
+    function getWatchedTime() {
+
+      if (!skipped) {
+        percentageWatched = calculatePercentage();
+        percentageFinal.innerHTML = "<p class='change'><span class='currentTime'>The user watched after skip: <strong>"+ percentageWatched + "%</strong></span></p>";
+        localStorage.setItem('yt-ended', percentageWatched);
+        if (i === 1) {
+          skipped = true;
+        }
+        i++;
+      }
+    }
+
+    // window.onbeforeunload = function () {
+    //   localStorage.setItem('yt-ended', ???);
+    // };
 
     function getWord(timePlayed) {
       if (timePlayed >= 0 && timePlayed <= 33) {
@@ -58,21 +117,8 @@
     }
 
     function onPlayerReady(e) {
-      document.getElementById("rez").innerHTML = "<p class='ready'>video loaded.</p>";
+      document.getElementById("percentage").innerHTML = "<p class='ready'>video loaded.</p>";
     }
-
-    function onPlayerStateChange(e) {
-      document.getElementById("rez").innerHTML +=
-        "<p class='change'>"+
-          "<span class='currentTime'>current time: <strong>"+player.getCurrentTime()+"</strong></span>"+
-          "<span class='percentage'>percentage: <strong>"+ Math.round(player.getCurrentTime() / player.getDuration() * 100) +"%</strong></span>"+
-          "<span class='word'>word: <strong>"+ getWord(Math.round(player.getCurrentTime() / player.getDuration() * 100)) +"</strong></span>"+
-        "</p>";
-    }
-
-    window.onbeforeunload = function () {
-      localStorage.setItem('yt-ended', player.getCurrentTime());
-    };
   </script>
 
 </body>
