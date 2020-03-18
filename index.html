@@ -25,6 +25,7 @@
 
   <div id="percentage"></div>
   <div id="percentage-final"></div>
+  <div id="percentage-word"></div>
 
   <script type="text/javascript">
 
@@ -35,6 +36,7 @@
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     var percentage = document.getElementById("percentage");
     var percentageFinal = document.getElementById("percentage-final");
+    var percentageWord = document.getElementById("percentage-word");
     var percentageWatched = 0;
     var timer;
     var timeSpent = [];
@@ -53,7 +55,6 @@
     }
 
     function onPlayerStateChange(e) {
-
       if (e.data === 1) {
         if(!timeSpent.length){
           for (var i=0, l=parseInt(player.getDuration()); i<l; i++) timeSpent.push(false);
@@ -62,7 +63,9 @@
       } else if (e.data === 2) {
         clearInterval(timer);
       } else if (e.data === 3) {
-        getWatchedTime();
+        getWatchedTime(e.data);
+      } else if (e.data === 0) {
+        getWatchedTime(e.data);
       }
     }
 
@@ -82,25 +85,33 @@
 
     function showPercentage() {
       var result = calculatePercentage();
-      percentage.innerHTML = "<p class='change'><span class='currentTime'>The user watched: <strong>"+ result + "%</strong></span></p>";
+      percentage.innerHTML = "<p class='change'><span class='currentTime'>The user watched: <strong>"+ result +"%</strong></span></p>";
     }
 
-    function getWatchedTime() {
-
-      if (!skipped) {
-        percentageWatched = calculatePercentage();
-        percentageFinal.innerHTML = "<p class='change'><span class='currentTime'>The user watched after skip: <strong>"+ percentageWatched + "%</strong></span></p>";
-        localStorage.setItem('yt-ended', percentageWatched);
-        if (i === 1) {
+    function getWatchedTime(ev) {
+      if (ev === 0) {
+        if (!skipped) {
+          percentageWatched = calculatePercentage();
+          percentageFinal.innerHTML = "<p class='change'><span class='currentTime'>The user watched: <strong>"+ percentageWatched +"% of the video.</strong></span></p>";
+          percentageWord.innerHTML = "<p class='change'><span class='currentTime'>Word for percentage: <strong>"+ getWord(percentageWatched) +"</strong></span></p>";
+          localStorage.setItem('yt-ended', percentageWatched);
           skipped = true;
         }
-        i++;
+      }
+
+      if (ev === 3) {
+        if (!skipped) {
+          percentageWatched = calculatePercentage();
+          percentageFinal.innerHTML = "<p class='change'><span class='currentTime'>The user watched AFTER skip: <strong>"+ percentageWatched +"%</strong></span></p>";
+          percentageWord.innerHTML = "<p class='change'><span class='currentTime'>Word for percentage: <strong>"+ getWord(percentageWatched) +"</strong></span></p>";
+          localStorage.setItem('yt-ended', percentageWatched);
+          if (i === 1) {
+            skipped = true;
+          }
+          i++;
+        }
       }
     }
-
-    // window.onbeforeunload = function () {
-    //   localStorage.setItem('yt-ended', ???);
-    // };
 
     function getWord(timePlayed) {
       if (timePlayed >= 0 && timePlayed <= 33) {
